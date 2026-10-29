@@ -86,7 +86,7 @@ As variáveis `ARP_CLOUD_ENDPOINT` e `ARP_CLOUD_TOKEN` já foram configuradas no
 
 ## GitHub
 
-A conexão consultada não retornou repositórios disponíveis, e o conector não oferece criação de repositório. O projeto foi entregue pronto para inclusão em um repositório privado. Exclua `data/` se a política do repositório não permitir armazenar o snapshot institucional; o código publicado na Vercel já funciona sem ele. Preserve as exclusões de `.gitignore`. Para implantação contínua, conecte o repositório ao projeto Vercel após criá-lo.
+Repositório conectado: `cmrparanhos017-jpg/arp-executivo`, branch de produção `main`. Na Vercel, o diretório raiz da aplicação é `arp-executivo`. Alterações nessa branch acionam a integração de implantação automática. Os dados da planilha permanecem no Supabase; não inclua `data/`, `.env.local` ou credenciais no repositório.
 
 ## Validação realizada
 
