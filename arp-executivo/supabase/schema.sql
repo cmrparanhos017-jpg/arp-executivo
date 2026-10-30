@@ -22,3 +22,17 @@ grant select, insert on public.arp_datasets to service_role;
 grant select, insert, update on public.arp_workspace to service_role;
 create policy arp_datasets_backend_only on public.arp_datasets for all to service_role using (true) with check (true);
 create policy arp_workspace_backend_only on public.arp_workspace for all to service_role using (true) with check (true);
+
+
+-- Members are managed exclusively by the authenticated server function.
+create table if not exists public.arp_members (
+ email text primary key check(email=lower(email)),
+ role text not null check(role in ('admin','viewer')),
+ active boolean not null default true,
+ created_at timestamptz not null default now()
+);
+alter table public.arp_members enable row level security;
+revoke all on public.arp_members from public, anon, authenticated;
+grant all on public.arp_members to service_role;
+drop policy if exists arp_members_service on public.arp_members;
+create policy arp_members_service on public.arp_members for all to service_role using(true) with check(true);

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { currentIdentity } from '@/lib/access';
 import { Dataset, HEADERS, toEntries } from '@/lib/arp';
 
 export const dynamic = 'force-dynamic';
@@ -19,14 +18,9 @@ async function cloud(method: 'GET' | 'POST', body?: unknown) {
 }
 export async function GET() {
   try {
+    if (!await currentIdentity()) return NextResponse.json({ error: 'Entre para consultar a base.' }, { status: 401, headers: responseHeaders });
     const result = await cloud('GET');
-    if (!result) {
-      const localFile = process.env.ARP_LOCAL_DATA_FILE;
-      if (!localFile) return NextResponse.json({ error: 'Configure o Supabase ou importe uma planilha para usar neste navegador.' }, { status: 503, headers: responseHeaders });
-      const dataset = JSON.parse(await readFile(resolve(process.cwd(), localFile), 'utf8')) as Dataset;
-      toEntries(dataset);
-      return NextResponse.json({ dataset, storage: 'local', version: 0 }, { headers: responseHeaders });
-    }
+    if (!result) return NextResponse.json({ error: 'Conexão com Supabase não configurada.' }, { status: 503, headers: responseHeaders });
     return NextResponse.json(result.data, { status: result.response.status, headers: responseHeaders });
   } catch {
     return NextResponse.json({ error: 'Não foi possível ler o Supabase. Tente novamente ou importe uma planilha para armazenamento local.' }, { status: 502, headers: responseHeaders });
@@ -36,6 +30,9 @@ export async function POST(request: NextRequest) {
   const origin = request.headers.get('origin');
   if (!origin || new URL(origin).host !== request.headers.get('host')) return NextResponse.json({ error: 'Origem da requisição inválida.' }, { status: 403 });
   try {
+    const user = await currentIdentity();
+    if (!user) return NextResponse.json({ error: 'Entre para continuar.' }, { status: 401 });
+    if (user.role !== 'admin') return NextResponse.json({ error: 'Somente o administrador pode importar planilhas.' }, { status: 403 });
     const text = await request.text();
     if (new TextEncoder().encode(text).byteLength > 3_900_000) return NextResponse.json({ error: 'A importação excede 3,9 MB de dados.' }, { status: 413 });
     const body = JSON.parse(text) as { dataset: Dataset; baseVersion: number };
