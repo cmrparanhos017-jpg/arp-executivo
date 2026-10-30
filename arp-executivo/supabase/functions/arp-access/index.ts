@@ -17,7 +17,7 @@ Deno.serve(async (req:Request)=>{
   return json({session:data.session,user});
  }
  if(action==='accept'){
-  if(typeof body.password!=='string'||body.password.length<12||body.password.length>128)return json({error:'Use uma senha de 12 a 128 caracteres.'},400);
+  if(typeof body.password!=='string'||body.password.length<6||body.password.length>128)return json({error:'Use uma senha de 6 a 128 caracteres.'},400);
   const {data,error}=await authClient.auth.verifyOtp({token_hash:String(body.tokenHash),type:body.tokenType==='recovery'?'recovery':'invite'});
   if(error||!data.session)return json({error:'Convite inválido ou expirado. Solicite outro ao administrador.'},401);
   const user=await identity(data.session.access_token);if(!user)return json({error:'Convite revogado.'},403);
