@@ -349,20 +349,38 @@ h1 { font-size:30px; font-weight:580; letter-spacing:-1.3px; line-height:1.25; m
 @media(max-width:480px){.topbar .breadcrumb{display:none}.purchase-toggle h3{font-size:20px}.purchase-value strong{font-size:22px}.purchase-finance{display:grid;gap:12px}.heading-actions .button{flex:1 1 130px}.source-chip{max-width:200px}.kpi-value{font-size:24px}.purchase-heading{gap:12px}.purchase-toggle{flex-basis:220px}}
 
 /* Search is the primary action on every consultation screen. */
-.filter-panel { background:linear-gradient(120deg,#123c55,#172c48); border:2px solid #4ea9cf; border-radius:24px; padding:24px; box-shadow:0 12px 32px #0003; }
+.filter-panel { background:linear-gradient(120deg,#493b12,#302810); border:2px solid #e4bd47; border-radius:24px; padding:24px; box-shadow:0 12px 32px #0003; }
 .filter-intro { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
-.filter-intro-icon { display:grid; place-items:center; flex:0 0 48px; height:48px; border-radius:16px; background:#67d5f322; color:#b0eeff; }
+.filter-intro-icon { display:grid; place-items:center; flex:0 0 48px; height:48px; border-radius:16px; background:#f6cf6324; color:#ffe49a; }
 .filter-intro h2 { font-size:21px; font-weight:700; color:#fff; line-height:1.3; margin:0 0 5px; }
-.filter-intro p { color:#d3e7f6; font-size:15px; line-height:1.5; margin:0; }
-.filter-panel .global-search { background:#f6fbff; border:2px solid #c6e5f5; border-radius:14px; padding:10px 14px; min-height:54px; color:#245575; }
-.filter-panel .global-search input { color:#132d45; font-size:17px; }
-.filter-panel .global-search input::placeholder { color:#4a6579; }
-.filter-panel .global-search:focus-within { outline:3px solid #a7edff; outline-offset:3px; }
-.filter-panel .global-search kbd { background:#e1edf5; color:#31536c; border-color:#c6d9e7; }
-.filter-panel .filter-label>span { color:#edf6ff; font-size:15px; font-weight:600; margin-bottom:8px; }
-.filter-panel .select-wrap select { min-height:46px; height:auto; background:#f6fbff; color:#17344d; font-size:16px; border-color:#c6e5f5; padding:11px 34px 11px 12px; border-radius:12px; }
-.filter-panel .select-wrap svg { top:15px; color:#31536c; }
-.filter-panel .filter-toggle { min-height:48px; font-size:16px; color:#fff; border-color:#87c5e3; background:#255578; padding:10px 16px; }
+.filter-intro p { color:#f4e8bf; font-size:15px; line-height:1.5; margin:0; }
+.filter-panel .global-search { background:#fffdf4; border:2px solid #e7cf83; border-radius:14px; padding:10px 14px; min-height:54px; color:#705312; }
+.filter-panel .global-search input { color:#30290e; font-size:17px; }
+.filter-panel .global-search input::placeholder { color:#746438; }
+.filter-panel .global-search:focus-within { outline:3px solid #ffe798; outline-offset:3px; }
+.filter-panel .global-search kbd { background:#f4e9c6; color:#705719; border-color:#dfcb8e; }
+.filter-panel .filter-label>span { color:#fff4d0; font-size:15px; font-weight:600; margin-bottom:8px; }
+.filter-panel .select-wrap select { min-height:46px; height:auto; background:#fffdf4; color:#30290e; font-size:16px; border-color:#e7cf83; padding:11px 34px 11px 12px; border-radius:12px; }
+.filter-panel .select-wrap svg { top:15px; color:#705719; }
+.filter-panel .filter-toggle { min-height:48px; font-size:16px; color:#fff; border-color:#e4bd47; background:#6c551b; padding:10px 16px; }
 .filter-panel .clear-filters { color:#fff; font-size:15px; }
-.filter-panel .filter-grid,.filter-panel .advanced-grid { border-top-color:#80b7d550; }
+.filter-panel .filter-grid,.filter-panel .advanced-grid { border-top-color:#e4bd4755; }
 @media(max-width:600px) { .filter-panel { padding:18px 14px; }.filter-intro { align-items:flex-start; gap:10px; }.filter-intro h2 { font-size:19px; }.filter-intro p { font-size:14px; }.filter-panel .global-search { flex-basis:100%; }.filter-panel .global-search input { font-size:16px; }.filter-panel .search-row { flex-wrap:wrap; } }
+
+/* Gold ornament inspired by the acanthus leaf; not an official insignia. */
+.acanto-mark { display:block; width:34px; height:42px; flex-shrink:0; color:#e8c35e; }
+.brand-mark.intendencia-mark { width:46px; height:52px; transform:none; background:linear-gradient(145deg,#463716,#211c10); border:1px solid #e4bd4770; box-shadow:0 4px 18px #e4bd4714; }
+.filter-panel { position:relative; isolation:isolate; overflow:hidden; }
+.filter-panel>.filter-intro,.filter-panel>.search-row,.filter-panel>.filter-grid,.filter-panel>.advanced-grid { position:relative; z-index:1; }
+.filter-acanto { position:absolute; right:20px; top:4px; width:140px; height:180px; opacity:.075; pointer-events:none; z-index:0; transform:rotate(15deg); }
+.purchase-card { border:2px solid #a88c48; box-shadow:0 9px 26px #0004,inset 0 1px 0 #f8d77518; margin-bottom:22px; }
+.purchase-card:focus-within { border-color:#f1cf70; box-shadow:0 0 0 3px #e4bd4720,0 9px 26px #0004; }
+.purchase-atas { border-top-color:#a88c4860; }
+.filter-panel .available-filter { padding:10px; margin:0; border:2px solid #f0cd68; border-radius:16px; background:#f0cd6817; box-shadow:0 0 0 3px #f0cd6809; }
+.filter-panel .available-filter>span { color:#ffe290; font-weight:750; }
+.filter-panel .available-filter select { font-weight:700; background:#fff0bb; border-color:#efd178; }
+.items-table th.available-column { background:#453713; color:#ffe59b; border-left:1px solid #ae8b3c70; border-right:1px solid #ae8b3c70; }
+.items-table td.available-column { background:#e4bd4709; border-left:1px solid #ae8b3c40; border-right:1px solid #ae8b3c40; }
+.available-quantity { display:inline-block; min-width:68px; padding:7px 10px; border-radius:10px; background:#f1cc6920; border:1px solid #d5af4555; color:#ffe59b; font-size:16px; font-weight:750; white-space:nowrap; }
+.available-quantity.is-empty { background:#de859315; border-color:#de859355; color:#ffabb8; }
+@media(max-width:600px) { .filter-acanto { right:4px; width:100px; }.filter-panel .available-filter { padding:7px; margin:0; }.purchase-card { border-radius:22px; } }
