@@ -9,6 +9,7 @@ export async function POST(request:Request){
  const raw=await request.text();if(raw.length>4096)return NextResponse.json({error:'Solicitação grande demais.'},{status:413});
  const body=JSON.parse(raw);
  if(body.action==='logout'){const token=(await cookies()).get('arp_access')?.value;try{if(token)await accessCall({action:'logout'},token);}finally{await clearSession();}return NextResponse.json({ok:true},{headers});}
+ if(body.action==='selfRecovery'){const user=await currentIdentity();if(user?.role!=='admin')return NextResponse.json({error:'Acesso restrito.'},{status:403});const result=await accessCall({action:'selfRecovery'},(await cookies()).get('arp_access')?.value);if(result.status!==200)return NextResponse.json({error:'Não foi possível gerar o link.'},{status:result.status});return NextResponse.json({link:`https://arp-executivo.vercel.app/#convite=${encodeURIComponent(result.data.tokenHash)}&tipo=recovery`},{headers});}
  if(!['login','accept'].includes(body.action))return NextResponse.json({error:'Operação inválida.'},{status:400});
  const result=await accessCall(body);
  if(result.status!==200)return NextResponse.json({error:result.data.error},{status:result.status,headers});

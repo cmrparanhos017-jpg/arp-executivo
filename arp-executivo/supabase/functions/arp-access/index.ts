@@ -37,6 +37,8 @@ Deno.serve(async (req:Request)=>{
  if(action==='session')return json({user});
  if(action==='logout'){await db.auth.admin.signOut(req.headers.get('x-user-token')!,'local');return json({ok:true});}
  if(user.role!=='admin')return json({error:'Somente o administrador pode gerenciar acessos.'},403);
+ if(action==='selfRecovery'){const {data,error}=await db.auth.admin.generateLink({type:'recovery',email:user.email});if(error)throw error;return json({tokenHash:data.properties.hashed_token});}
+
  if(action==='list'){const {data,error}=await db.from('arp_members').select('email,role,active,created_at').order('created_at');if(error)throw error;return json({members:data});}
  if(action==='revoke'){
   const email=String(body.email).trim().toLowerCase();const {error}=await db.from('arp_members').update({active:false}).eq('email',email).eq('role','viewer');if(error)throw error;return json({ok:true});
