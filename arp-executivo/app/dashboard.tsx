@@ -13,7 +13,7 @@ const PAGE_SIZE = 12;
 const statusClass: Record<BalanceStatus, string> = { Normal:'normal', Crítico:'critical', Esgotado:'empty', Revisar:'review' };
 
 function AcantoMark({ className = '' }: { className?:string }) {
-  return <svg className={`acanto-mark ${className}`} viewBox="0 0 80 104" fill="none" aria-hidden="true"><path d="M40 96C39 75 42 41 40 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>{[false,true].map(mirror=><g key={String(mirror)} transform={mirror?'translate(80 0) scale(-1 1)':undefined}><path d="M40 88C19 85 8 74 10 62C14 69 19 67 19 62C10 55 7 46 12 38C15 46 21 46 22 41C14 33 17 24 24 18C23 26 28 30 31 27C29 18 34 10 40 5C36 22 43 32 37 43C31 40 27 35 26 31C24 43 34 46 37 53C31 57 24 53 22 49C23 63 35 60 39 69C30 74 22 70 18 67C23 80 33 77 40 88Z" fill="currentColor" fillOpacity=".92"/><path d="M16 73C27 76 33 81 40 88M18 47C26 52 32 55 38 65M25 27C29 34 34 40 38 46" stroke="#6e4c0b" strokeWidth="1.2" strokeLinecap="round" opacity=".55"/></g>)}</svg>;
+  return <img className={`acanto-mark ${className}`} src="/intendencia-acanto.svg" alt="" aria-hidden="true" width={178} height={93}/>;
 }
 
 function Checkbox({ checked, mixed = false, label, onChange }: { checked: boolean; mixed?: boolean; label: string; onChange: () => void }) {

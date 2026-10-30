@@ -367,12 +367,12 @@ h1 { font-size:30px; font-weight:580; letter-spacing:-1.3px; line-height:1.25; m
 .filter-panel .filter-grid,.filter-panel .advanced-grid { border-top-color:#e4bd4755; }
 @media(max-width:600px) { .filter-panel { padding:18px 14px; }.filter-intro { align-items:flex-start; gap:10px; }.filter-intro h2 { font-size:19px; }.filter-intro p { font-size:14px; }.filter-panel .global-search { flex-basis:100%; }.filter-panel .global-search input { font-size:16px; }.filter-panel .search-row { flex-wrap:wrap; } }
 
-/* Gold ornament inspired by the acanthus leaf; not an official insignia. */
-.acanto-mark { display:block; width:34px; height:42px; flex-shrink:0; color:#e8c35e; }
+/* User-provided Intendência SVG, preserving its original paths and colors. */
+.acanto-mark { display:block; width:40px; height:auto; object-fit:contain; flex-shrink:0; color:#e8c35e; }
 .brand-mark.intendencia-mark { width:46px; height:52px; transform:none; background:linear-gradient(145deg,#463716,#211c10); border:1px solid #e4bd4770; box-shadow:0 4px 18px #e4bd4714; }
 .filter-panel { position:relative; isolation:isolate; overflow:hidden; }
 .filter-panel>.filter-intro,.filter-panel>.search-row,.filter-panel>.filter-grid,.filter-panel>.advanced-grid { position:relative; z-index:1; }
-.filter-acanto { position:absolute; right:20px; top:4px; width:140px; height:180px; opacity:.075; pointer-events:none; z-index:0; transform:rotate(15deg); }
+.filter-acanto { position:absolute; right:20px; top:4px; width:190px; height:auto; opacity:.12; pointer-events:none; z-index:0; transform:rotate(-10deg); }
 .purchase-card { border:2px solid #a88c48; box-shadow:0 9px 26px #0004,inset 0 1px 0 #f8d77518; margin-bottom:22px; }
 .purchase-card:focus-within { border-color:#f1cf70; box-shadow:0 0 0 3px #e4bd4720,0 9px 26px #0004; }
 .purchase-atas { border-top-color:#a88c4860; }
@@ -383,4 +383,4 @@ h1 { font-size:30px; font-weight:580; letter-spacing:-1.3px; line-height:1.25; m
 .items-table td.available-column { background:#e4bd4709; border-left:1px solid #ae8b3c40; border-right:1px solid #ae8b3c40; }
 .available-quantity { display:inline-block; min-width:68px; padding:7px 10px; border-radius:10px; background:#f1cc6920; border:1px solid #d5af4555; color:#ffe59b; font-size:16px; font-weight:750; white-space:nowrap; }
 .available-quantity.is-empty { background:#de859315; border-color:#de859355; color:#ffabb8; }
-@media(max-width:600px) { .filter-acanto { right:4px; width:100px; }.filter-panel .available-filter { padding:7px; margin:0; }.purchase-card { border-radius:22px; } }
+@media(max-width:600px) { .filter-acanto { right:4px; width:135px; }.filter-panel .available-filter { padding:7px; margin:0; }.purchase-card { border-radius:22px; } }
