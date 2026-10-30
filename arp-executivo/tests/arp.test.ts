@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { EMPTY_FILTERS, HEADERS, ataKey, filterEntries, groupEntries, parseBR, parseDate, purchaseKey, safeUrl, toEntries, totalize, type Dataset } from '../lib/arp';
-import { exportExcel, exportPDF } from '../lib/export';
+import { EXCEL_COLUMNS, exportExcel, exportPDF } from '../lib/export';
 import * as XLSX from 'xlsx';
 
 const dataset:Dataset=JSON.parse(fs.readFileSync(new URL('../data/initial-dataset.json',import.meta.url),'utf8'));
@@ -41,18 +41,31 @@ test('números vazios e datas não são convertidos silenciosamente',()=>{
   assert.equal(parseDate(entries[0].raw['VIGÊNCIA INICIAL']),'2024-11-12');
   assert.throws(()=>parseBR('73.11'));assert.throws(()=>parseDate('31/02/26'));assert.equal(safeUrl('javascript:alert(1)'),null);
 });
-test('Excel completo: 2.121 linhas, 26 originais, tipos numéricos e fórmulas recalculáveis',async()=>{
+test('Excel de consulta: uma aba, 16 colunas, dados fiéis, formatos e texto ajustado',async()=>{
   const wb=await exportExcel(entries,dataset,EMPTY_FILTERS,'Filtro atual',false);
-  assert.deepEqual(wb.SheetNames,['Resumo','Itens','Atas','Originais']);
-  assert.equal(wb.Sheets.Itens.A2122.v,entries.at(-1)!.raw.UG);
-  assert.equal(wb.Sheets.Itens.F2.t,'s');assert.equal(wb.Sheets.Itens.F2.v,'00039');
-  assert.equal(wb.Sheets.Itens.Q2.t,'n');assert.equal(wb.Sheets.Itens.Q2.v,73.11);
-  assert.equal(wb.Sheets.Itens.AA2.f,'T2-Y2');assert.equal(wb.Sheets.Itens.AD2.f,'Y2*Q2');
-  assert.equal(wb.Sheets.Itens.U2.t,'n');assert.equal(wb.Sheets.Itens.U2.z,'dd/mm/yyyy');
-  const roundtrip=XLSX.read(XLSX.write(wb,{type:'buffer',bookType:'xlsx'}),{type:'buffer'});
-  assert.equal(roundtrip.Sheets.Resumo.B9.v,3833555.77);
-  const raw=XLSX.utils.sheet_to_json<string[]>(roundtrip.Sheets.Originais,{header:1,raw:true});
-  assert.deepEqual(raw.slice(1),dataset.rows);
+  assert.deepEqual(wb.worksheets.map(s=>s.name),['Itens']);
+  const sheet=wb.getWorksheet('Itens')!;
+  assert.equal(sheet.columnCount,16);assert.equal(sheet.rowCount,entries.length+1);
+  assert.equal(sheet.getCell('C2').value,'00039');assert.equal(sheet.getCell('I2').value,73.11);
+  assert.equal(sheet.getCell('H2').alignment.wrapText,true);assert.ok(sheet.getRow(2).height!>=32);
+  assert.equal(sheet.getCell('M2').numFmt,'dd/mm/yyyy');assert.equal(sheet.getCell('P2').numFmt,'#,##0.######');
+  assert.equal(sheet.views[0].state,'frozen');
+  const saved=await wb.xlsx.writeBuffer();
+  const roundtrip=XLSX.read(saved,{type:'buffer',cellDates:false});
+  assert.deepEqual(roundtrip.SheetNames,['Itens']);
+  const data=XLSX.utils.sheet_to_json<unknown[]>(roundtrip.Sheets.Itens,{header:1,raw:true,defval:null});
+  assert.deepEqual(data[0],[...EXCEL_COLUMNS]);
+  for(let i=0;i<entries.length;i++)for(let c=0;c<EXCEL_COLUMNS.length;c++){
+    const h=EXCEL_COLUMNS[c],e=entries[i],actual=data[i+1][c];
+    const numeric=h==='VALOR UNITÁRIO'?e.price:h==='QTD HOMOLOGADA'?e.approved:h==='QTD REGISTRADA'?e.registered:h==='QTD DISPONÍVEL'?e.available:null;
+    const date=h==='VIGÊNCIA INICIAL'?e.starts:h==='VIGÊNCIA FINAL'?e.ends:null;
+    if(date)assert.equal(actual,(Date.parse(date+'T00:00:00Z')-Date.UTC(1899,11,30))/86400000);
+    else if(numeric)assert.equal(actual,e.raw[h]===''?null:numeric.toNumber());
+    else assert.equal(actual,e.raw[h]||null);
+  }
+  const selected=entries.filter(e=>e.search.includes('banana'));
+  const small=await exportExcel(selected,dataset,EMPTY_FILTERS,'Selecionados',false);
+  assert.equal(small.getWorksheet('Itens')!.rowCount,selected.length+1);
 });
 test('PDF executivo: relatório real, grupos e paginação válida',async()=>{
   const doc=await exportPDF(entries,dataset,EMPTY_FILTERS,'Filtro atual',false);

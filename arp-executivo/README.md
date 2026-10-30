@@ -1,6 +1,6 @@
 # ARP · Dashboard Executivo de Pregões e Saldos
 
-Aplicação Next.js / React / Tailwind CSS com Lucide Icons, importação Excel/HTML, exportação SheetJS, PDF executivo e persistência real no Supabase.
+Aplicação Next.js / React / Tailwind CSS com Lucide Icons, importação Excel/HTML, importação SheetJS e exportação formatada ExcelJS, PDF executivo e persistência real no Supabase.
 
 ## Usar
 
@@ -35,7 +35,7 @@ O snapshot local `data/initial-dataset.json` contém exclusivamente as células 
 
 A diferença das quantidades não comprova emissão de empenhos. QTD HOMOLOGADA e QTD REGISTRADA são campos diferentes e permanecem separados. Quantidades agregadas podem misturar unidades; o panorama executivo usa valores financeiros. Saldo positivo não comprova vigência: aplique o filtro “Vigentes hoje” quando necessário.
 
-A chave de agrupamento é UG + UGG + NOME UGG + Nº ATA + ANO ATA. O filtro Compra / pregão consolida todas as atas da compra selecionada nos indicadores. Identificadores mantêm os zeros à esquerda. Valores são calculados com decimal.js (40 dígitos de precisão) e apresentados em reais. O Excel mantém uma aba “Originais” e fórmulas recalculáveis na aba “Itens”. O PDF é um relatório executivo consolidado por ata; o detalhamento completo fica no Excel.
+A chave de agrupamento é UG + UGG + NOME UGG + Nº ATA + ANO ATA. O filtro Compra / pregão consolida todas as atas da compra selecionada nos indicadores. Identificadores mantêm os zeros à esquerda. Valores são calculados com decimal.js (40 dígitos de precisão) e apresentados em reais. O Excel contém somente a aba “Itens”, com as 16 colunas solicitadas, cabeçalho congelado, filtros, datas e valores numéricos, quebra de texto e altura de linha ajustada. O PDF é um relatório executivo consolidado por ata; o detalhamento completo fica no Excel.
 
 ## Rodar no computador
 
