@@ -12,7 +12,7 @@ export type Totals = { count: number; approved: Decimal; available: Decimal; use
 export type Group = { key: string; entries: Entry[]; raw: Raw; totals: Totals };
 export type Filters = { query: string; modality: string; ug: string; ugg: string; supplier: string; status: string; purchase: string; ata: string; role: string; itemType: string; validity: string };
 export const EMPTY_FILTERS: Filters = { query: '', modality: '', ug: '', ugg: '', supplier: '', status: '', purchase: '', ata: '', role: '', itemType: '', validity: '' };
-export const METHODOLOGY = 'Consumo calculado = QTD HOMOLOGADA − QTD DISPONÍVEL, conforme a fórmula solicitada. Não representa comprovação de empenhos emitidos. A QTD REGISTRADA permanece separada, pois pode ter abrangência diferente da quantidade homologada.';
+export const METHODOLOGY = 'Quantidade não disponível = homologada − disponível. Valor não disponível = essa diferença × preço unitário. Percentual não disponível = valor não disponível ÷ valor homologado × 100. São diferenças calculadas a partir da planilha: não comprovam empenhos, entregas ou pagamentos. A quantidade registrada é exibida separadamente.';
 
 export function normalize(value: string) { return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 export function parseBR(value: string): Decimal | null {

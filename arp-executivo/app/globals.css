@@ -384,3 +384,14 @@ h1 { font-size:30px; font-weight:580; letter-spacing:-1.3px; line-height:1.25; m
 .available-quantity { display:inline-block; min-width:68px; padding:7px 10px; border-radius:10px; background:#f1cc6920; border:1px solid #d5af4555; color:#ffe59b; font-size:16px; font-weight:750; white-space:nowrap; }
 .available-quantity.is-empty { background:#de859315; border-color:#de859355; color:#ffabb8; }
 @media(max-width:600px) { .filter-acanto { right:4px; width:135px; }.filter-panel .available-filter { padding:7px; margin:0; }.purchase-card { border-radius:22px; } }
+
+.ata-validity { display:flex; flex-wrap:wrap; align-items:center; gap:7px 10px; margin-top:10px; color:#e7deb9; font-size:14px; line-height:1.5; }
+.ata-validity span { overflow-wrap:anywhere; min-width:0; }
+.ata-validity>b { border:1px solid #9d8a4c66; border-radius:9px; padding:2px 8px; font-size:12px; font-weight:600; }
+.ata-validity.is-expired { color:#ffc28e; }
+.balance-guide { display:flex; flex-wrap:wrap; gap:12px 24px; padding:18px 20px; border:1px solid #69765266; border-radius:18px; background:#17201c; margin:-7px 0 24px; }
+.balance-guide>div { display:flex; flex-wrap:wrap; align-items:center; gap:9px; color:#e6ede7; font-size:14px; }
+.balance-guide p { flex-basis:100%; color:#bfcbbf; font-size:13px; line-height:1.6; margin:0; }
+.balance-guide strong { color:#f4e6b5; }
+.kpi-label { flex-wrap:wrap; line-height:1.5; }
+.ata-progress>div { flex-wrap:wrap; }

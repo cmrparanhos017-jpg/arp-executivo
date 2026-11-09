@@ -4,10 +4,11 @@ const stripImports=text=>text.split('\n').filter(line=>!line.startsWith('import 
 const ui=read('app/dashboard.tsx');
 const imports=ui.split('\n').filter(line=>line.startsWith('import ')&&!line.includes("from '@/")&&!line.includes("from './members'")).join('\n').replace('type ReactNode','type FormEvent, type ReactNode');
 const arp=stripImports(read('lib/arp.ts'));
+const validity=stripImports(read('lib/validity.ts'));
 const purchases='const catalog = '+read('lib/pncp-catalog.json').trim()+';\n'+stripImports(read('lib/purchases.ts'));
 const exports=stripImports(read('lib/export.ts'));
 const members=stripImports(read('app/members.tsx')).replace("'use client';",'').replace('export default function Members','function Members');
 let body=stripImports(ui).replace("'use client';",'').replace("const exp=await import('@/lib/export');",'const exp={exportPDF,exportExcel};');
 let css=read('app/globals.css').replace('@import "tailwindcss";','').replace("@theme inline { --font-sans: 'ARP Sans', 'Inter', 'Segoe UI', sans-serif; }",":root { --font-sans: 'ARP Sans', 'Inter', 'Segoe UI', sans-serif; }");
 body=body.replace('return <div className="app-shell">','return <div className="app-shell"><style>{ARP_STYLES}</style>');
-fs.writeFileSync('DashboardARP.tsx',"'use client';\n// Gerado por scripts/build-single.mjs. Requer as rotas autenticadas de servidor.\nimport Decimal from 'decimal.js';\n"+imports+"\ntype Identity={email:string;role:'admin'|'viewer';id:string};\n"+arp+'\n'+purchases+'\n'+exports+'\n'+members+'\nconst ARP_STYLES='+JSON.stringify(css)+';\n'+body);
+fs.writeFileSync('DashboardARP.tsx',"'use client';\n// Gerado por scripts/build-single.mjs. Requer as rotas autenticadas de servidor.\nimport Decimal from 'decimal.js';\n"+imports+"\ntype Identity={email:string;role:'admin'|'viewer';id:string};\n"+arp+'\n'+validity+'\n'+purchases+'\n'+exports+'\n'+members+'\nconst ARP_STYLES='+JSON.stringify(css)+';\n'+body);
