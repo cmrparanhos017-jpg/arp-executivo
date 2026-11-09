@@ -395,3 +395,5 @@ h1 { font-size:30px; font-weight:580; letter-spacing:-1.3px; line-height:1.25; m
 .balance-guide strong { color:#f4e6b5; }
 .kpi-label { flex-wrap:wrap; line-height:1.5; }
 .ata-progress>div { flex-wrap:wrap; }
+
+.request-actions{display:flex;flex-wrap:wrap;gap:10px}.pending-access-count{display:inline-grid;place-items:center;min-width:24px;padding:2px 6px;border-radius:9px;background:#f2ce68;color:#312609;font-size:13px;font-weight:750}.access-notice{align-items:center;flex-wrap:wrap;border-color:#d5b35d;background:#d5b35d14}.access-notice .button{margin-left:auto}.otp-input{font-size:22px;letter-spacing:.15em}.otp-input::placeholder{font-size:16px;letter-spacing:normal}

@@ -1,3 +1,4 @@
+import {mailConfigured,sendAccessCode} from './mailer.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.118.0';
 const TOKEN_HASH = Deno.env.get('ARP_TOKEN_SHA256') ?? '93cb77a196149f15a994d3c375fd306d34ef6505e5b70ac928b2922e18d5b80f';
 const json = (v:unknown,status=200)=>new Response(JSON.stringify(v),{status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store'}});
@@ -8,8 +9,43 @@ Deno.serve(async (req:Request)=>{
  const authClient=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false,autoRefreshToken:false}});
  try{
  const body=await req.json(); const action=body.action;
+ if(action==='capabilities')return json({otpEnabled:mailConfigured()});
  const member=async(email:string)=>{const {data,error}=await db.from('arp_members').select('email,role,active').eq('email',email.toLowerCase()).maybeSingle();if(error)throw error;return data?.active?data:null;};
  const identity=async(token:string)=>{const {data,error}=await db.auth.getUser(token);if(error||!data.user?.email||!data.user.email_confirmed_at)return null;const m=await member(data.user.email);return m?{...m,id:data.user.id}:null;};
+ const email=String(body.email??'').trim().toLowerCase();
+ if(['requestAccess','issueCode','verifyCode'].includes(action)){
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>254)return json({error:'Informe um e-mail válido.'},400);
+  if(typeof body.rateKey!=='string'||!/^[a-f0-9]{64}$/.test(body.rateKey))return json({error:'Solicitação inválida.'},400);
+  const bucket=Math.floor(Date.now()/600000);
+  const allowance=action==='requestAccess'?5:action==='issueCode'?10:30;
+  for(const key of [`ip:${action}:${body.rateKey}:${bucket}`,`email:${action}:${email}:${bucket}`]){
+   const {data,error}=await db.rpc('arp_check_access_rate',{p_key:key,p_limit:allowance});if(error)throw error;
+   if(!data)return json({error:'Muitas tentativas. Aguarde alguns minutos e tente novamente.'},429);
+  }
+ }
+ if(action==='requestAccess'){
+  if(!(await member(email))){const {error}=await db.from('arp_access_requests').upsert({email},{onConflict:'email',ignoreDuplicates:true});if(error)throw error;}
+  return json({ok:true,message:'Solicitação registrada. Aguarde a aprovação do administrador.'});
+ }
+ if(action==='issueCode'){
+  if(!mailConfigured())return json({error:'A entrada por código ainda não foi ativada. Use seu acesso atual.'},503);
+  if(!(await member(email)))return json({ok:true});
+  const cooldown=Math.floor(Date.now()/60000);
+  const {data:allowed,error:rateError}=await db.rpc('arp_check_access_rate',{p_key:`send:${email}:${cooldown}`,p_limit:1});if(rateError)throw rateError;
+  if(!allowed)return json({error:'Aguarde um minuto antes de pedir outro código.'},429);
+  const {data,error}=await db.auth.admin.generateLink({type:'magiclink',email});
+  if(error)throw error;
+  try{await sendAccessCode(email,data.properties.email_otp);}catch{return json({error:'Não foi possível enviar o código. Aguarde um minuto e tente novamente.'},502);}
+  return json({ok:true});
+ }
+ if(action==='verifyCode'){
+  if(!/^\d{6,10}$/.test(String(body.code??'')))return json({error:'Informe o código recebido por e-mail.'},400);
+  const {data,error}=await authClient.auth.verifyOtp({email,token:String(body.code),type:'email'});
+  if(error||!data.session)return json({error:'Código inválido ou expirado. Solicite outro.'},401);
+  const user=await identity(data.session.access_token);
+  if(!user)return json({error:'Seu acesso não está autorizado.'},403);
+  return json({session:data.session,user});
+ }
  if(action==='login'){
   const {data,error}=await authClient.auth.signInWithPassword({email:String(body.email).toLowerCase(),password:String(body.password)});
   if(error||!data.session)return json({error:'E-mail ou senha inválidos.'},401);
@@ -39,6 +75,12 @@ Deno.serve(async (req:Request)=>{
  if(user.role!=='admin')return json({error:'Somente o administrador pode gerenciar acessos.'},403);
  if(action==='selfRecovery'){const {data,error}=await db.auth.admin.generateLink({type:'recovery',email:user.email});if(error)throw error;return json({tokenHash:data.properties.hashed_token});}
 
+ if(action==='requests'){const {data,error}=await db.from('arp_access_requests').select('email,status,created_at').eq('status','pending').order('created_at');if(error)throw error;return json({requests:data});}
+ if(action==='approve'||action==='deny'){
+  const {error}=await db.rpc('arp_review_access',{p_email:email,p_decision:action==='approve'?'approved':'denied',p_actor:user.email});
+  if(error)return json({error:'Esta solicitação já foi analisada ou não pode ser alterada.'},409);
+  return json({ok:true});
+ }
  if(action==='list'){const {data,error}=await db.from('arp_members').select('email,role,active,created_at').order('created_at');if(error)throw error;return json({members:data});}
  if(action==='revoke'){
   const email=String(body.email).trim().toLowerCase();const {error}=await db.from('arp_members').update({active:false}).eq('email',email).eq('role','viewer');if(error)throw error;return json({ok:true});

@@ -114,3 +114,13 @@ A implantação de produção está READY. Em 29/10/2026, a leitura de `/api/dat
 - Guia de seis passos e perguntas frequentes em Como usar.
 - Na Central de dados, o administrador informa um e-mail e gera um convite pessoal. O envio é manual: copie e compartilhe o link de uso único (24 horas). Não há disparo automático de e-mails. O convidado define uma senha; não há cadastro público. Para revogar ou reativar um acesso, use a lista de pessoas na mesma seção.
 - A Edge Function `arp-access` valida a chave de integração antes de qualquer ação. A service_role permanece somente no Supabase. O cliente de autenticação é separado do cliente administrativo para que login e refresh não alterem os privilégios das consultas de autorização.
+
+## Acesso solicitado e código por e-mail (versão de teste)
+
+O visitante informa seu e-mail em Solicitar acesso. A solicitação fica pendente em Central de dados. O administrador aprova somente o perfil de consulta ou nega o pedido. Aprovação não confirma a posse do endereço: o visitante ainda precisa receber e validar um código de uso único. Revogação continua sendo verificada no servidor a cada acesso.
+
+A Edge Function envia o código diretamente por SMTP com TLS; o código não retorna em respostas de API nem é enviado ao navegador. Há limites por endereço e origem para solicitações e tentativas. Apenas o servidor pode consultar solicitações e alterar aprovações, por meio das rotas administrativas autenticadas. O administrador vê a contagem de solicitações pendentes no painel, atualizada a cada minuto. Não são enviados avisos por e-mail ao administrador.
+
+Para ativar a entrada por código, configure os segredos da função `arp-access` no Supabase: `SMTP_HOST`, `SMTP_PORT` (465 para TLS implícito, ou 587 com STARTTLS obrigatório se disponível no ambiente), `SMTP_USER`, `SMTP_PASS` e `SMTP_FROM` (somente o endereço remetente, sem nome de exibição). Use credencial SMTP própria ou senha de aplicativo do provedor, inserida diretamente no painel de segredos. Nunca use nem envie uma senha principal por chat. Dependendo do provedor, será preciso validar o endereço ou o domínio remetente.
+
+Sem configuração completa, a função informa `otpEnabled:false` e rejeita envio de códigos com 503. O login por senha existente e os convites antigos continuam funcionando. A configuração de envio e um teste de entrega real para endereço externo são necessários antes de substituir o fluxo em produção. Uma conta aprovada nova não consegue entrar enquanto o remetente não estiver ativo.
