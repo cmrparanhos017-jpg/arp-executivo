@@ -18,7 +18,6 @@ async function cloud(method: 'GET' | 'POST', body?: unknown) {
 }
 export async function GET() {
   try {
-    if (!await currentIdentity()) return NextResponse.json({ error: 'Entre para consultar a base.' }, { status: 401, headers: responseHeaders });
     const result = await cloud('GET');
     if (!result) return NextResponse.json({ error: 'Conexão com Supabase não configurada.' }, { status: 503, headers: responseHeaders });
     return NextResponse.json(result.data, { status: result.response.status, headers: responseHeaders });

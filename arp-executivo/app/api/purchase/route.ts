@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
-import { currentIdentity } from '@/lib/access';
 import { confirmedCatalog, pncpReference } from '@/lib/purchases';
 export async function GET(request:Request){
  try{
- if(!await currentIdentity())return NextResponse.json({error:'Entre para continuar.'},{status:401});
  const q=new URL(request.url).searchParams, ref=pncpReference(q.get('link')??'');
  if(!ref||ref.year!==q.get('year')||!/^\d{6}$/.test(q.get('ugg')??'')||!/^\d{1,6}$/.test(q.get('number')??''))return NextResponse.json({error:'Referência PNCP inválida.'},{status:400});
  const key=`${q.get('ugg')}|${q.get('number')}|${ref.year}`;

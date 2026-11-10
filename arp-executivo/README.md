@@ -4,7 +4,7 @@ Aplicação Next.js / React / Tailwind CSS com Lucide Icons, importação Excel/
 
 ## Usar
 
-1. Abra o endereço de produção e entre com o e-mail e a senha cadastrados pelo seu convite. A aplicação valida a identidade no Supabase Auth e o perfil no servidor.
+1. Abra o endereço de produção para consultar sem login. Para atualizar a base, clique em Acesso administrativo e use seu e-mail e senha atuais.
 2. Use a busca global ou os filtros. Os indicadores, gráficos e atas acompanham o filtro atual.
 3. Expanda uma ata para selecionar itens e consultar os saldos. Clique na descrição ou na lupa para ver todas as 26 colunas, os links e todos os arquivos.
 4. A seleção permanece ativa ao mudar de página ou de filtro. O painel informa quantos itens selecionados estão fora da visualização. O PDF usa a seleção enquanto houver itens selecionados.
@@ -80,7 +80,7 @@ O projeto `arp-executivo` foi criado na região de São Paulo. As tabelas `arp_d
 
 Cada importação cria ou reutiliza um snapshot imutável e atualiza o ponteiro da base por comparação de versão. Se outra sessão atualizar a base, o servidor retorna 409 e preserva a versão ativa. Os snapshots anteriores permanecem no banco; restauração por interface não foi adicionada.
 
-A aplicação usa Supabase Auth com acesso por convite e cookies HttpOnly, Secure em produção e SameSite=Strict. A autorização consulta `arp_members` no servidor a cada operação, permitindo revogação imediata. Visitantes podem consultar, filtrar, selecionar e exportar. Somente administradores importam ou gerenciam acessos. A proteção da Vercel pode ser substituída pelo login da aplicação somente depois de verificar os bloqueios de API, para que convidados não precisem de conta Vercel. Não publique `.env.local`.
+A consulta é pública. O Supabase Auth protege a administração com cookies HttpOnly, Secure em produção e SameSite=Strict. O servidor verifica o perfil em `arp_members` antes de importar dados ou executar operações administrativas. Visitantes podem consultar, filtrar, selecionar e exportar sem login. Não publique `.env.local`.
 
 As variáveis `ARP_CLOUD_ENDPOINT` e `ARP_CLOUD_TOKEN` já foram configuradas no projeto Vercel criado durante esta entrega. Seus valores secretos não acompanham o ZIP. Para outra implantação, configure uma nova chave forte de integração e defina seu SHA-256 como `ARP_TOKEN_SHA256` nos secrets da Edge Function; use a chave original apenas no ambiente do servidor Next.
 
@@ -112,5 +112,9 @@ A implantação de produção está READY. Em 29/10/2026, a leitura de `/api/dat
 - Links legados da família `/transparencia/arpshow/` foram mantidos nas células originais. O botão de acesso usa a compra no PNCP, onde o visitante localiza o número do item; a aba Pregões oferece o link Compras.gov informado oficialmente pelo PNCP.
 - Texto ampliado e contraste reforçado, sem remover o tema escuro.
 - Guia de seis passos e perguntas frequentes em Como usar.
-- Na Central de dados, o administrador informa um e-mail e gera um convite pessoal. O envio é manual: copie e compartilhe o link de uso único (24 horas). Não há disparo automático de e-mails. O convidado define uma senha; não há cadastro público. Para revogar ou reativar um acesso, use a lista de pessoas na mesma seção.
+- Compartilhamento: basta enviar o endereço público do dashboard. A Central de dados é exclusiva para administradores autenticados; solicitações, convites e códigos de e-mail não são necessários para consulta.
 - A Edge Function `arp-access` valida a chave de integração antes de qualquer ação. A service_role permanece somente no Supabase. O cliente de autenticação é separado do cliente administrativo para que login e refresh não alterem os privilégios das consultas de autorização.
+
+## Consulta pública
+
+A consulta do dashboard e a leitura da base em `/api/dataset` são públicas por autorização expressa do proprietário. Visitantes podem buscar, filtrar, selecionar e exportar sem conta, senha, código ou aprovação. O detalhamento PNCP também é público. A Central de dados e o POST de importação exigem administrador autenticado, validado no servidor. As tabelas do Supabase continuam privadas; a integração é acessada somente pelo servidor e não expõe suas credenciais. O envio de códigos por e-mail não é utilizado.
