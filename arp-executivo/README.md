@@ -118,3 +118,9 @@ A implantação de produção está READY. Em 29/10/2026, a leitura de `/api/dat
 ## Consulta pública
 
 A consulta do dashboard e a leitura da base em `/api/dataset` são públicas por autorização expressa do proprietário. Visitantes podem buscar, filtrar, selecionar e exportar sem conta, senha, código ou aprovação. O detalhamento PNCP também é público. A Central de dados e o POST de importação exigem administrador autenticado, validado no servidor. As tabelas do Supabase continuam privadas; a integração é acessada somente pelo servidor e não expõe suas credenciais. O envio de códigos por e-mail não é utilizado.
+
+## Aviso de atualização da base
+
+Ao carregar a base, o dashboard exibe a data e o horário da última importação, a idade em dias e o texto de apoio à administração. O alerta amarelo aparece somente quando decorreram mais de 10 períodos de 24 horas. Os horários são apresentados em Brasília. O aviso é lembrado por sessão do navegador e reaparece se a importação mudar ou a base passar a estar desatualizada. A faixa de atualização permanece disponível para reabrir a janela.
+
+O horário de importação é registrado em `arp_workspace.last_imported_at`, junto com a troca da base e o incremento da versão. Reimportações do mesmo conteúdo atualizam esse horário; deploys e consultas não o alteram. Em bases antigas sem horário registrado, não se presume a data: o usuário é orientado a consultar o administrador. A próxima importação sincronizada passa a preencher o registro.

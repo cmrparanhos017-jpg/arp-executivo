@@ -36,3 +36,6 @@ revoke all on public.arp_members from public, anon, authenticated;
 grant all on public.arp_members to service_role;
 drop policy if exists arp_members_service on public.arp_members;
 create policy arp_members_service on public.arp_members for all to service_role using(true) with check(true);
+
+-- A data só é preenchida por uma importação concluída. Não usar a data do deploy.
+alter table public.arp_workspace add column if not exists last_imported_at timestamptz;

@@ -12,13 +12,13 @@ Deno.serve(async (request: Request) => {
   if (!['GET', 'POST'].includes(request.method)) return json({ error: 'Método não permitido.' }, 405);
   const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false, autoRefreshToken: false } });
   try {
-    const { data: head, error: headError } = await db.from('arp_workspace').select('version,current_dataset').eq('id', true).maybeSingle();
+    const { data: head, error: headError } = await db.from('arp_workspace').select('version,current_dataset,last_imported_at').eq('id', true).maybeSingle();
     if (headError) throw headError;
     if (request.method === 'GET') {
       if (!head) return json({ error: 'Nenhuma planilha foi importada.' }, 404);
       const { data, error } = await db.from('arp_datasets').select('*').eq('id', head.current_dataset).single();
       if (error) throw error;
-      return json({ dataset: { filename: data.filename, headers: data.headers, rows: data.rows, contentHash: data.content_hash, importedAt: data.created_at }, version: head.version, storage: 'supabase' });
+      return json({ dataset: { filename: data.filename, headers: data.headers, rows: data.rows, contentHash: data.content_hash, importedAt: head.last_imported_at ?? (head.version === 1 ? data.created_at : null) }, version: head.version, storage: 'supabase' });
     }
     const raw = await request.text();
     if (new TextEncoder().encode(raw).length > 3_900_000) return json({ error: 'Importação grande demais.' }, 413);
@@ -36,13 +36,14 @@ Deno.serve(async (request: Request) => {
         snapshot = retry.data;
       } else snapshot = result.data;
     }
+    const importedAt = new Date().toISOString();
     // Compare-and-swap: nenhuma importação pode sobrescrever uma sessão mais nova.
     const { data: changed, error } = head
-      ? await db.from('arp_workspace').update({ current_dataset: snapshot!.id, version: head.version + 1 }).eq('id', true).eq('version', baseVersion).select('version')
-      : await db.from('arp_workspace').insert({ id: true, current_dataset: snapshot!.id, version: 1 }).select('version');
+      ? await db.from('arp_workspace').update({ current_dataset: snapshot!.id, version: head.version + 1, last_imported_at: importedAt }).eq('id', true).eq('version', baseVersion).select('version')
+      : await db.from('arp_workspace').insert({ id: true, current_dataset: snapshot!.id, version: 1, last_imported_at: importedAt }).select('version');
     if (error) throw error;
     if (!changed?.length) return json({ error: 'Conflito de atualização. Recarregue a base e tente novamente.' }, 409);
-    return json({ version: changed[0].version, storage: 'supabase', importedAt: new Date().toISOString() });
+    return json({ version: changed[0].version, storage: 'supabase', importedAt });
   } catch (error) {
     console.error('ARP persistence error', error instanceof Error ? error.name : 'database');
     return json({ error: 'Falha na persistência. A base ativa anterior foi preservada.' }, 500);

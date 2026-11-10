@@ -5,7 +5,7 @@ Decimal.set({ precision: 40, rounding: Decimal.ROUND_HALF_UP });
 export const HEADERS = ['UG', 'SIGLA', 'TIPO', 'UGG', 'NOME UGG', 'Nº ATA', 'ANO ATA', 'Nº COMPRA', 'ANO COMPRA', 'LINK ATA PNCP', 'LINK COMPRA PNCP', 'MODALIDADE', 'CÓD ITEM', 'Nº ITEM', 'DESCRIÇÃO', 'TIPO ITEM', 'VALOR UNITÁRIO', 'CNPJ', 'NOME CNPJ', 'QTD HOMOLOGADA', 'VIGÊNCIA INICIAL', 'VIGÊNCIA FINAL', 'LINK ITEM', 'QTD REGISTRADA', 'QTD DISPONÍVEL', 'ARQUIVOS'] as const;
 export type Column = typeof HEADERS[number];
 export type Raw = Record<Column, string>;
-export type Dataset = { filename: string; headers: string[]; rows: string[][]; contentHash: string; version?: number; importedAt?: string };
+export type Dataset = { filename: string; headers: string[]; rows: string[][]; contentHash: string; version?: number; importedAt?: string | null };
 export type BalanceStatus = 'Normal' | 'Crítico' | 'Esgotado' | 'Revisar';
 export type Entry = { id: string; line: number; raw: Raw; price: Decimal; approved: Decimal; registered: Decimal | null; available: Decimal; used: Decimal; approvedValue: Decimal; availableValue: Decimal; usedValue: Decimal; usedPercent: number | null; status: BalanceStatus; warning: string | null; starts: string | null; ends: string | null; search: string };
 export type Totals = { count: number; approved: Decimal; available: Decimal; used: Decimal; approvedValue: Decimal; availableValue: Decimal; usedValue: Decimal; usedPercent: number | null; financialPercent: number | null; critical: number; empty: number; normal: number; invalid: number };
